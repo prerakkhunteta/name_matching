@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 
 st.set_page_config(layout="wide", page_title="Name Matching System", page_icon="🔍")
 
-# Sidebar with instructions and info
 def sidebar():
     st.sidebar.title("About the App")
     st.sidebar.info(
@@ -25,7 +24,6 @@ def sidebar():
 
 sidebar()
 
-# Main UI
 def main():
     st.markdown(
         """
@@ -68,14 +66,12 @@ def main():
         else:
             st.warning("Please upload both CSV files.", icon="⚠️")
 
-# Helper to create a download link for DataFrame
 def get_table_download_link(df):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()
     href = f'<a href="data:file/csv;base64,{b64}" download="matches.csv">📥 Download Results as CSV</a>'
     return href
 
-# Enhanced results display and error handling
 def find_matches(db1_file, db2_file, threshold, blocking):
     files = {
         'db1_file': (db1_file.name, db1_file.getvalue(), 'text/csv'),
@@ -95,7 +91,6 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                 total_matches = result.get('total', len(matches_df))
                 avg_score = matches_df['score'].mean() if 'score' in matches_df.columns else None
                 
-                # Results summary as a table, no white background
                 summary_data = {
                     "Total Matches": [total_matches],
                 }
@@ -104,7 +99,6 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                 summary_df = pd.DataFrame(summary_data)
                 st.table(summary_df)
 
-                # Add a histogram of similarity scores if present
                 if 'score' in matches_df.columns:
                     fig, ax = plt.subplots()
                     matches_df['score'].plot(kind='hist', bins=10, color='#1976D2', edgecolor='white', ax=ax)
@@ -113,7 +107,6 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                     ax.set_ylabel('Frequency')
                     st.pyplot(fig)
 
-                # Column filter for score threshold
                 if 'score' in matches_df.columns:
                     min_score = float(matches_df['score'].min())
                     max_score = float(matches_df['score'].max())
@@ -135,9 +128,6 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                     use_container_width=True,
                     hide_index=True
                 )
-
-                # Remove per-row expander for match details
-                # (No longer displaying detailed match info for each row)
 
                 with st.expander("📥 Download Options & Insights"):
                     st.markdown(get_table_download_link(filtered_df), unsafe_allow_html=True)
