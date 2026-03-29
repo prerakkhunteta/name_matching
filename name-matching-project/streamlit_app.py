@@ -6,7 +6,7 @@ import base64
 import matplotlib.pyplot as plt
 import os
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
 st.set_page_config(layout="wide", page_title="Name Matching System", page_icon="🔍")
 
