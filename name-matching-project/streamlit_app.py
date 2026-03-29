@@ -1,14 +1,12 @@
 import streamlit as st
 import pandas as pd
+import requests
 import io
 import base64
 import matplotlib.pyplot as plt
-import sys
 import os
-import tempfile
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
-from backend.src.pipeline import NameMatchingPipeline
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 st.set_page_config(layout="wide", page_title="Name Matching System", page_icon="🔍")
 
@@ -78,26 +76,23 @@ def get_table_download_link(df):
     return href
 
 def find_matches(db1_file, db2_file, threshold, blocking):
+    files = {
+        'db1_file': (db1_file.name, db1_file.getvalue(), 'text/csv'),
+        'db2_file': (db2_file.name, db2_file.getvalue(), 'text/csv')
+    }
+    data = {
+        'threshold': threshold,
+        'blocking': blocking
+    }
     with st.spinner("Processing files and finding matches..."):
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".csv", mode='wb') as temp1, \
-                 tempfile.NamedTemporaryFile(delete=False, suffix=".csv", mode='wb') as temp2:
-                
-                temp1.write(db1_file.getvalue())
-                temp2.write(db2_file.getvalue())
-                
-                temp1_name = temp1.name
-                temp2_name = temp2.name
-
-            pipeline = NameMatchingPipeline(
-                blocking_strategy=blocking,
-                threshold=threshold
-            )
-            results_df = pipeline.process_csv_files([temp1_name, temp2_name])
-            
-            if len(results_df) > 0:
-                total_matches = len(results_df)
-                avg_score = results_df['similarity_score'].mean() if 'similarity_score' in results_df.columns else None
+            response = requests.post(f"{BACKEND_URL}/match", files=files, data=data)
+            response.raise_for_status()
+            result = response.json()
+            if result.get("matches"):
+                matches_df = pd.DataFrame(result["matches"])
+                total_matches = result.get('total', len(matches_df))
+                avg_score = matches_df['similarity_score'].mean() if 'similarity_score' in matches_df.columns else None
                 
                 summary_data = {
                     "Total Matches": [total_matches],
@@ -107,23 +102,23 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                 summary_df = pd.DataFrame(summary_data)
                 st.table(summary_df)
 
-                if 'similarity_score' in results_df.columns:
+                if 'similarity_score' in matches_df.columns:
                     fig, ax = plt.subplots()
-                    results_df['similarity_score'].plot(kind='hist', bins=10, color='#1976D2', edgecolor='white', ax=ax)
+                    matches_df['similarity_score'].plot(kind='hist', bins=10, color='#1976D2', edgecolor='white', ax=ax)
                     ax.set_title('Distribution of Similarity Scores')
                     ax.set_xlabel('Similarity Score')
                     ax.set_ylabel('Frequency')
                     st.pyplot(fig)
 
-                if 'similarity_score' in results_df.columns:
-                    min_score = float(results_df['similarity_score'].min())
-                    max_score = float(results_df['similarity_score'].max())
+                if 'similarity_score' in matches_df.columns:
+                    min_score = float(matches_df['similarity_score'].min())
+                    max_score = float(matches_df['similarity_score'].max())
                     filter_score = st.slider(
                         "Filter matches by minimum similarity score", min_value=min_score, max_value=max_score, value=min_score, step=1.0
                     )
-                    filtered_df = results_df[results_df['similarity_score'] >= filter_score]
+                    filtered_df = matches_df[matches_df['similarity_score'] >= filter_score]
                 else:
-                    filtered_df = results_df
+                    filtered_df = matches_df
 
                 st.dataframe(
                     filtered_df.style.apply(
@@ -143,14 +138,10 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                 st.success(f"✅ Found {total_matches} matches!", icon="✅")
             else:
                 st.info("No matches found.", icon="ℹ️")
-                
-            os.unlink(temp1_name)
-            os.unlink(temp2_name)
-            
+        except requests.exceptions.RequestException as e:
+            st.error(f"❌ Error connecting to the backend: {e}")
         except Exception as e:
             st.error(f"❌ An error occurred: {e}")
-            import traceback
-            st.error(traceback.format_exc())
 
 if __name__ == "__main__":
     main()
