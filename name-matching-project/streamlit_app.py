@@ -114,18 +114,8 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                     ax.set_ylabel('Frequency')
                     st.pyplot(fig)
 
-                if 'similarity_score' in matches_df.columns:
-                    min_score = float(matches_df['similarity_score'].min())
-                    max_score = float(matches_df['similarity_score'].max())
-                    filter_score = st.slider(
-                        "Filter matches by minimum similarity score", min_value=min_score, max_value=max_score, value=min_score, step=1.0
-                    )
-                    filtered_df = matches_df[matches_df['similarity_score'] >= filter_score]
-                else:
-                    filtered_df = matches_df
-
                 st.dataframe(
-                    filtered_df.style.apply(
+                    matches_df.style.apply(
                         lambda x: [
                             'background-color: #C8E6C9' if v >= threshold else '' if pd.notnull(v) else ''
                             for v in x
@@ -137,7 +127,7 @@ def find_matches(db1_file, db2_file, threshold, blocking):
                 )
 
                 with st.expander("📥 Download Options & Insights"):
-                    st.markdown(get_table_download_link(filtered_df), unsafe_allow_html=True)
+                    st.markdown(get_table_download_link(matches_df), unsafe_allow_html=True)
                     st.write("You can download the matched results as a CSV file.")
                 st.success(f"✅ Found {total_matches} matches!", icon="✅")
             else:
