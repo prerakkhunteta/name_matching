@@ -91,6 +91,10 @@ def find_matches(db1_file, db2_file, threshold, blocking):
             result = response.json()
             if result.get("matches"):
                 matches_df = pd.DataFrame(result["matches"])
+                
+                columns_to_drop = ['blocking_key', 'matching_columns']
+                matches_df = matches_df.drop(columns=[col for col in columns_to_drop if col in matches_df.columns])
+                
                 total_matches = result.get('total', len(matches_df))
                 avg_score = matches_df['similarity_score'].mean() if 'similarity_score' in matches_df.columns else None
                 
