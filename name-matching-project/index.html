@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare Hospital - Patient Registration System</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <span style="font-size: 1.8rem;">🏥</span>
+                <span>MediCare Hospital</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="showPage('home')" class="active">Home</a></li>
+                <li><a href="#" onclick="showPage('demo')">Patient Registration</a></li>
+                <li><a href="#" onclick="showPage('how-it-works')">About</a></li>
+                <li><a href="#" onclick="showPage('dashboard')">Dashboard</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="home" class="page active">
+        <div class="hero">
+            <h1>Welcome to MediCare Hospital</h1>
+            <p>Fast and accurate patient registration using government ID verification</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="showPage('demo')">Register Patient</button>
+                <button class="btn btn-secondary" onclick="showPage('how-it-works')">Learn More</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>ID Types Supported</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Fast</h3>
+                    <p>Instant Verification</p>
+                </div>
+                <div class="stat-card">
+                    <h3>100%</h3>
+                    <p>Accurate Data</p>
+                </div>
+            </div>
+
+            <h2 style="text-align: center; margin: 3rem 0 2rem;">Why Choose Our System</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>🔍 Quick Registration</h3>
+                    <p>Register patients in seconds by simply entering their government ID number.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Error-Free Data</h3>
+                    <p>No typing mistakes. Patient details are fetched directly from official databases.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔗 Multiple ID Support</h3>
+                    <p>Accept Aadhaar, PAN Card, or Voter ID for patient verification.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ Save Time</h3>
+                    <p>Reduce registration time from minutes to seconds for better patient care.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="demo" class="page">
+        <div class="container">
+            <h1 style="text-align: center; margin-bottom: 1rem;">Patient Registration</h1>
+            <p style="text-align: center; color: var(--text-light); margin-bottom: 2rem;">Enter patient's government ID to auto-fill registration form</p>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="demo-panel">
+                    <div class="id-type-selector">
+                        <div class="id-type-btn active" onclick="selectIdType('aadhaar')">
+                            <div style="font-size: 1.8rem;">🆔</div>
+                            <div style="font-weight: 600;">Aadhaar</div>
+                        </div>
+                        <div class="id-type-btn" onclick="selectIdType('pan')">
+                            <div style="font-size: 1.8rem;">💳</div>
+                            <div style="font-weight: 600;">PAN Card</div>
+                        </div>
+                        <div class="id-type-btn" onclick="selectIdType('voter')">
+                            <div style="font-size: 1.8rem;">🗳️</div>
+                            <div style="font-weight: 600;">Voter ID</div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="idInput">ID Number <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="idInput" placeholder="Enter 12-digit Aadhaar number">
+                        <div class="sample-ids" id="sampleIds">
+                            <span class="sample-id" onclick="tryId('234567890123')">234567890123</span>
+                            <span class="sample-id" onclick="tryId('345678901234')">345678901234</span>
+                            <span class="sample-id" onclick="tryId('456789012345')">456789012345</span>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 2rem;" onclick="fetchRecord()">Fetch Patient Details</button>
+
+                    <div style="border-top: 2px solid var(--border); padding-top: 2rem;">
+                        <h3 style="margin-bottom: 1.5rem; color: var(--text);">Patient Information</h3>
+                        
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="nameField">Full Name <span class="auto-fetched-tag" id="nameTag" style="display: none;">✓</span></label>
+                                <input type="text" id="nameField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="fatherField">Father's Name <span class="auto-fetched-tag" id="fatherTag" style="display: none;">✓</span></label>
+                                <input type="text" id="fatherField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="dobField">Date of Birth <span class="auto-fetched-tag" id="dobTag" style="display: none;">✓</span></label>
+                                <input type="text" id="dobField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="genderField">Gender <span class="auto-fetched-tag" id="genderTag" style="display: none;">✓</span></label>
+                                <input type="text" id="genderField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label for="addressField">Address <span class="auto-fetched-tag" id="addressTag" style="display: none;">✓</span></label>
+                                <input type="text" id="addressField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="stateField">State <span class="auto-fetched-tag" id="stateTag" style="display: none;">✓</span></label>
+                                <input type="text" id="stateField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="phoneField">Phone Number <span class="auto-fetched-tag" id="phoneTag" style="display: none;">✓</span></label>
+                                <input type="text" id="phoneField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label for="emailField">Email Address <span class="auto-fetched-tag" id="emailTag" style="display: none;">✓</span></label>
+                                <input type="text" id="emailField" placeholder="Auto-filled from database" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="sourceField">Source Database</label>
+                                <input type="text" id="sourceField" placeholder="Will show after fetch" readonly>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="statusField">Status</label>
+                                <input type="text" id="statusField" placeholder="Pending" readonly>
+                            </div>
+                        </div>
+
+                        <div id="successBanner" style="display: none; background: #d4edda; color: #155724; padding: 1rem; border-radius: 6px; margin-top: 1.5rem; text-align: center; border: 1px solid #c3e6cb;">
+                            ✓ Patient details verified and fetched from government database
+                        </div>
+
+                        <div id="duplicateWarning" style="display: none; margin-top: 1.5rem; border: 2px solid #ff9800; border-radius: 8px; padding: 1.5rem; background: #fff3e0;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <span style="font-size: 1.5rem;">⚠️</span>
+                                <h3 style="margin: 0; color: #e65100;">Possible Existing Patient Found</h3>
+                            </div>
+                            
+                            <div style="background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                                <div style="margin-bottom: 0.5rem;">
+                                    <strong>New (from Aadhaar):</strong> <span id="newPatientName"></span>
+                                </div>
+                                <div>
+                                    <strong>Existing record:</strong> <span id="oldPatientName"></span>
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-light); margin-top: 0.5rem;">
+                                    DOB: <span id="oldPatientDob"></span> | Address: <span id="oldPatientAddress"></span>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.875rem;">Name similarity:</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;" id="nameScoreText">84%</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="nameScoreBar" style="background: #4caf50; height: 100%; width: 84%;"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.875rem;">Date of birth:</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;" id="dobScoreText">100%</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="dobScoreBar" style="background: #4caf50; height: 100%; width: 100%;"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-size: 0.875rem;">Address:</span>
+                                    <span style="font-size: 0.875rem; font-weight: 600;" id="addressScoreText">91%</span>
+                                </div>
+                                <div style="background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="addressScoreBar" style="background: #4caf50; height: 100%; width: 91%;"></div>
+                                </div>
+                            </div>
+
+                            <div style="background: #fff8e1; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border-left: 4px solid #ffa726;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">Overall confidence: <span id="overallConfidence">89%</span></div>
+                                <div style="font-size: 0.875rem; color: var(--text-light);" id="confidenceLevel">High — Likely same person</div>
+                            </div>
+
+                            <div style="display: flex; gap: 1rem;">
+                                <button class="btn" style="flex: 1; background: var(--primary); color: white;" onclick="viewExistingRecord()">View Existing Record</button>
+                                <button class="btn" style="flex: 1; background: var(--secondary); color: white;" onclick="registerAsNew()">Register as New Patient</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="how-it-works" class="page">
+        <div class="container">
+            <h1 style="text-align: center; margin-bottom: 2rem;">About Our System</h1>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h2 style="color: var(--accent);">Step 1: Select ID Type</h2>
+                    <p>Healthcare officer selects the type of government ID (Aadhaar, PAN, or Voter ID)</p>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h2 style="color: var(--accent);">Step 2: Enter ID Number</h2>
+                    <p>Officer enters only the ID number - no need to type patient name or other details</p>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h2 style="color: var(--accent);">Step 3: Auto-Fetch Data</h2>
+                    <p>System automatically fetches all patient details from the authoritative government database</p>
+                </div>
+
+                <div class="feature-card" style="margin-bottom: 2rem;">
+                    <h2 style="color: var(--accent);">Step 4: Duplicate Detection</h2>
+                    <p>System uses AI-based name matching to detect if patient was previously registered with different name spelling</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="page">
+        <div class="container">
+            <h1 style="text-align: center; margin-bottom: 2rem;">System Dashboard</h1>
+            
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>1,247</h3>
+                    <p>Total Patients</p>
+                </div>
+                <div class="stat-card">
+                    <h3>89</h3>
+                    <p>Duplicates Detected</p>
+                </div>
+                <div class="stat-card">
+                    <h3>23</h3>
+                    <p>Pending Review</p>
+                </div>
+                <div class="stat-card">
+                    <h3>92.8%</h3>
+                    <p>Match Accuracy</p>
+                </div>
+            </div>
+
+            <div style="background: var(--white); padding: 2rem; border-radius: 12px; margin-top: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <h2 style="margin-bottom: 1.5rem;">Recent Activity</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="text-align: left; padding: 1rem; color: var(--text-light);">Patient Name</th>
+                            <th style="text-align: left; padding: 1rem; color: var(--text-light);">ID Type</th>
+                            <th style="text-align: left; padding: 1rem; color: var(--text-light);">Status</th>
+                            <th style="text-align: left; padding: 1rem; color: var(--text-light);">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 1rem;">Mohammad Ali Khan</td>
+                            <td style="padding: 1rem;">Aadhaar</td>
+                            <td style="padding: 1rem;"><span class="badge badge-warning">Duplicate Found</span></td>
+                            <td style="padding: 1rem;">2025-04-19</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 1rem;">Priya Nair</td>
+                            <td style="padding: 1rem;">Aadhaar</td>
+                            <td style="padding: 1rem;"><span class="badge badge-warning">Duplicate Found</span></td>
+                            <td style="padding: 1rem;">2025-04-19</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 1rem;">Anjali Reddy</td>
+                            <td style="padding: 1rem;">PAN</td>
+                            <td style="padding: 1rem;"><span class="badge badge-success">Registered</span></td>
+                            <td style="padding: 1rem;">2025-04-18</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #f0f0f0;">
+                            <td style="padding: 1rem;">Rajesh Verma</td>
+                            <td style="padding: 1rem;">Voter ID</td>
+                            <td style="padding: 1rem;"><span class="badge badge-success">Registered</span></td>
+                            <td style="padding: 1rem;">2025-04-18</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem;">Kavita Patel</td>
+                            <td style="padding: 1rem;">Aadhaar</td>
+                            <td style="padding: 1rem;"><span class="badge badge-success">Registered</span></td>
+                            <td style="padding: 1rem;">2025-04-17</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="background: var(--white); padding: 2rem; border-radius: 12px; margin-top: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <h2 style="margin-bottom: 1.5rem;">Database Statistics</h2>
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Aadhaar Registrations</span>
+                        <span style="font-weight: 600;">847 patients</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 10px; border-radius: 5px;">
+                        <div style="background: var(--success); width: 68%; height: 100%; border-radius: 5px;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>PAN Registrations</span>
+                        <span style="font-weight: 600;">256 patients</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 10px; border-radius: 5px;">
+                        <div style="background: var(--accent); width: 21%; height: 100%; border-radius: 5px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Voter ID Registrations</span>
+                        <span style="font-weight: 600;">144 patients</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 10px; border-radius: 5px;">
+                        <div style="background: var(--warning); width: 11%; height: 100%; border-radius: 5px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Name Matching System © 2025</p>
+        <p style="opacity: 0.8; margin-top: 0.5rem;">Powered by AI-based identity resolution</p>
+    </footer>
+
+    <div id="existingRecordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 Existing Patient Record</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="record-section">
+                    <h3>Patient Information</h3>
+                    <div class="record-field">
+                        <span class="record-label">Patient ID:</span>
+                        <span class="record-value" id="modalPatientId">OLD001</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Full Name:</span>
+                        <span class="record-value" id="modalName">Md. Ali Khan</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Date of Birth:</span>
+                        <span class="record-value" id="modalDob">1978-11-05</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Gender:</span>
+                        <span class="record-value" id="modalGender">Male</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Father's Name:</span>
+                        <span class="record-value" id="modalFather">Abdul Khan</span>
+                    </div>
+                </div>
+
+                <div class="record-section">
+                    <h3>Contact Details</h3>
+                    <div class="record-field">
+                        <span class="record-label">Address:</span>
+                        <span class="record-value" id="modalAddress">Plot 7 Civil Lines, Lucknow</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">City:</span>
+                        <span class="record-value" id="modalCity">Lucknow</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">State:</span>
+                        <span class="record-value" id="modalState">Uttar Pradesh</span>
+                    </div>
+                </div>
+
+                <div class="record-section">
+                    <h3>Registration History</h3>
+                    <div class="record-field">
+                        <span class="record-label">Registration Date:</span>
+                        <span class="record-value" id="modalRegDate">2019-03-15</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Last Visit:</span>
+                        <span class="record-value" id="modalLastVisit">2024-12-10</span>
+                    </div>
+                    <div class="record-field">
+                        <span class="record-label">Status:</span>
+                        <span class="record-value"><span class="badge badge-success">Active Patient</span></span>
+                    </div>
+                </div>
+
+                <div style="background: #fff3e0; padding: 1rem; border-radius: 6px; border-left: 4px solid #ff9800; margin-top: 1.5rem;">
+                    <strong>⚠️ Note:</strong> This patient was registered before the Aadhaar system. Consider linking this record with the new Aadhaar registration.
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-primary" style="flex: 1;" onclick="mergeRecords()">Merge with New Record</button>
+                    <button class="btn" style="flex: 1; background: #6c757d; color: white;" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js?v=2"></script>
+</body>
+</html>
